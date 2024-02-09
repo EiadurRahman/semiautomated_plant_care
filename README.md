@@ -23,9 +23,13 @@ The following libraries are required to run this system:
 
 ## Getting Started
 
-To get started with this project, you need to flash your NodeMCU with Micropython. Follow the instructions on the [Micropython](https://micropython.org/) website to do this.
+To get started with this project, you need to flash your NodeMCU with Micropython. Follow the instructions on the [Micropython](https://docs.micropython.org/en/latest/esp8266/tutorial/intro.html) website to do this.
 
-Once you have Micropython running on your NodeMCU, you can clone this repository and install the required libraries.
+Once you have Micropython running on your NodeMCU, you can clone this repository and install the required libraries 'MIP' (package installer for micropython) is recomended.
+
+create account in both [twillio](https://www.twilio.com/en-us) and [ThingESP server](https://thingesp.siddhesh.me/).
+
+watch youtube videos for a step by step tutorial (might based on arduino but you'll get the idea) 
 
 ## Usage
 
