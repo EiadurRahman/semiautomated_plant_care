@@ -30,10 +30,6 @@ class Client:
         self.initalized = True
         return self
 
-    def on_connect(self, client, userdata, flags, rc):
-        print("Connected to thingesp with result code ", rc)
-        self.mqtt_client.subscribe(self.projectName + "/" + self.username)
-
     def on_message(self, client, msg):
         if self.initalized != True:
             print('Please set the callback func!')
