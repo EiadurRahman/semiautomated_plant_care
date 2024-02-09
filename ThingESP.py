@@ -6,7 +6,7 @@ from machine import Pin
 import urequests as requests
 import reading
 from umqtt.simple import MQTTClient
-
+ 
 
 d4 = Pin(2, Pin.OUT) # status led
 d1 = Pin(5,Pin.OUT) # motor/pump output
