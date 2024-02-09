@@ -48,64 +48,30 @@ class Client:
         self.mqtt_client.set_callback(self.on_message)
         self.mqtt_client.subscribe(self.projectName + "/" + self.username)
         
-        # main loop
-        count = 0
-        one_time_msg_send = True # for sending msg for once
+        one_time_msg_send = False # for sending msg for once
+        init_time = time.time()
         try:
             while True:
+                
                 self.mqtt_client.check_msg()   # Pass blocking argument as False
+                passed_time = time.time() - init_time
+                if passed_time > 300:
+                    print('reconnecting....')
+                    self.mqtt_client.subscribe(self.projectName + "/" + self.username)
+                    init_time = time.time()
+                
                 # sensor data reading
                 value = int(reading.moist())
-#                 print('{0}  c: {1}    '.format(value,count),end='\r') # | it was for debuging
-                if value < 300:
+                if value < 300 and not one_time_msg_send:
                     d1.on()
-                    one_time_msg_send = False
-                    if count <= 0:
-                        count = 300
-                        send_msg("Moisture level is low")
-                    else :
-                        count -= 1
-#                         print('passing send_msg func {0}'.format(count)) # for debuging
-                elif value > 1000 and not one_time_msg_send:# set value to stop overflow
+                    one_time_msg_send = True
+                    self.send_msg("Moisture level is low")
+                elif value > 1000 and one_time_msg_send:# set value to stop overflow
                     d1.off()
-                    one_time_msg_send = True 
-                    send_msg('Moisture level is restored')
-                    count = 0
+                    one_time_msg_send = False  
+                    self.send_msg('Moisture level is restored')
                 time.sleep(.1)
         except Exception as err:
             print('error : ',err)
             d1.off()
         time.sleep(0.2)
-    
-# this part is to send messages from your ESP module
-# this part does not relay on ThingESP server, it sends message indipendently. if your device lost connection with ThingESP,
-# your esp will still be able to send meassages 
-    def send_msg(self,msg):
-        d4.off()
-        # Your Twilio Account SID and Auth Token
-        account_sid = ''
-        auth_token = ''
-
-        # Set up the Twilio API URL for sending WhatsApp messages
-        twilio_url = 'https://api.twilio.com/2010-04-01/Accounts/{}/Messages.json'.format(account_sid)
-
-        # Set up the request headers
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        }
-
-        # Set up the request payload (message details)
-        payload = {
-            'To': 'whatsapp%3A%2B[contry code + your whatsapp number]',  # Replace with the recipient's Bangladeshi WhatsApp number
-            'From': 'whatsapp%3A%2B[twilio whatsapp num]',  # Replace with your Twilio WhatsApp number
-            'Body': msg,  # Message content
-        }
-
-        # Manually create the payload string
-        payload_string = '&'.join(['{}={}'.format(key, value) for key, value in payload.items()])
-
-        # Send the request
-        response = requests.post(twilio_url, headers=headers, auth=(account_sid, auth_token), data=payload_string)
-        
-        print('done sending msg : {}'.format(msg))
-        d4.on()
