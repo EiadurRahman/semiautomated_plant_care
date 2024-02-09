@@ -8,34 +8,43 @@ import err_log
 def handleResponse(query):
     if query == 'help': # help tempate
         help_template = """
-To check moisture status  : moisture status
-To check relative humidity : humidity
-To check relative temperature : temperature
-To start the pump : start pump
+To check moisture status  : moisture status / ms
+To check relative humidity : humidity / humd
+To check relative temperature : temperature / temp
+To start the pump : start pump / sp
 """
-        ThingESP.send_msg(help_template)
+        return (help_template)
     # check moisture status
-    elif query == 'moisture status' :
+    elif query in ['moisture status','ms']:
         value = round((adc.read()/1024)*100)
-        ThingESP.send_msg('soil moisture is : {0}%'.format(value))
+        return ('soil moisture is : {0}%'.format(value))
         
-    # write a condition for it to say if truning motor is nesseary or not if usr ask to turn on motor
-    elif query == 'start pump' :
+    # motor handling 
+    elif query in  ['start pump','sp'] :
         if adc.read() > 800: # to check if starting a ,otor is needed
             value = round((adc.read()/1024)*100) # convert into persentage
-            ThingESP.send_msg(' moisture level is at {0}%, watering is unnessery'.format(value))
+            return (' moisture level is at {0}%, watering is unnessery'.format(value))
         else:
-            ThingESP.send_msg('starting the pump')
+            return ('starting the pump')
             d1.on()
+    # DHT11 sensor 
+    elif query in ['humidity','temperature','humd','temp']:
+        if query in ['humidity','humd']:
+            humidity = reading.humd_temp('humd')
+            return ('humidity : {}%'.format(humidity))
+        elif query in [ 'temperature', 'temp']:
+            temp = reading.humd_temp('temp')
+            return ('temperature : {}.C'.format(temp))
     else:
-        return 'no task is set for [%s]'%query
+        return 'no task is set for {}'.format(query)
 # error handling loop
 while True :
     try :
         thing.setCallback(handleResponse).start()
     except Exception as err:
         print(err)
-        err_log.log(err) # log error msgs into err.txt file
-    print('END_TASK')
-d4.off()
-
+        err_log.log(err) 
+        d4.off()
+        sleep(1)
+        d4.on()
+        machine.reset() # resets the device
