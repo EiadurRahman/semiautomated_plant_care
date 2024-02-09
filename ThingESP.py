@@ -87,33 +87,32 @@ class Client:
 # this part is to send messages from your ESP module
 # this part does not relay on ThingESP server, it sends message indipendently. if your device lost connection with ThingESP,
 # your esp will still be able to send meassages 
-def send_msg(msg):
-    d4.off()
-    # Your Twilio Account SID and Auth Token
-    account_sid = ''
-    auth_token = ''
+    def send_msg(self,msg):
+        d4.off()
+        # Your Twilio Account SID and Auth Token
+        account_sid = ''
+        auth_token = ''
 
-    # Set up the Twilio API URL for sending WhatsApp messages
-    twilio_url = 'https://api.twilio.com/2010-04-01/Accounts/{}/Messages.json'.format(account_sid)
+        # Set up the Twilio API URL for sending WhatsApp messages
+        twilio_url = 'https://api.twilio.com/2010-04-01/Accounts/{}/Messages.json'.format(account_sid)
 
-    # Set up the request headers
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-    }
+        # Set up the request headers
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
 
-    # Set up the request payload (message details)
-    payload = {
-        'To': 'whatsapp%3A%2Bxxxxxxxxxxxx',  # Replace with the recipient's WhatsApp number
-        'From': 'whatsapp%3A%2Bxxxxxxxxxx',  # Replace with your Twilio WhatsApp number
-        'Body': msg,  # Message content
-    }
+        # Set up the request payload (message details)
+        payload = {
+            'To': 'whatsapp%3A%2B[contry code + your whatsapp number]',  # Replace with the recipient's Bangladeshi WhatsApp number
+            'From': 'whatsapp%3A%2B[twilio whatsapp num]',  # Replace with your Twilio WhatsApp number
+            'Body': msg,  # Message content
+        }
 
-    # Manually create the payload string
-    payload_string = '&'.join(['{}={}'.format(key, value) for key, value in payload.items()])
+        # Manually create the payload string
+        payload_string = '&'.join(['{}={}'.format(key, value) for key, value in payload.items()])
 
-    # Send the request
-    response = requests.post(twilio_url, headers=headers, auth=(account_sid, auth_token), data=payload_string)
-    
-    print('done sending msg : %s' %msg)
-    d4.on()
-
+        # Send the request
+        response = requests.post(twilio_url, headers=headers, auth=(account_sid, auth_token), data=payload_string)
+        
+        print('done sending msg : {}'.format(msg))
+        d4.on()
