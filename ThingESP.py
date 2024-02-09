@@ -57,7 +57,10 @@ class Client:
                 passed_time = time.time() - init_time
                 if passed_time > 300:
                     print('reconnecting....')
+                    d4.off()
                     self.mqtt_client.subscribe(self.projectName + "/" + self.username)
+                    print('connected')
+                    d4.on()
                     init_time = time.time()
                 
                 # sensor data reading
@@ -75,3 +78,34 @@ class Client:
             print('error : ',err)
             d1.off()
         time.sleep(0.2)
+    
+
+    def send_msg(self,msg):
+        d4.off()
+        # Your Twilio Account SID and Auth Token
+        account_sid = ''
+        auth_token = ''
+
+        # Set up the Twilio API URL for sending WhatsApp messages
+        twilio_url = 'https://api.twilio.com/2010-04-01/Accounts/{}/Messages.json'.format(account_sid)
+
+        # Set up the request headers
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+
+        # Set up the request payload (message details)
+        payload = {
+            'To': 'whatsapp%3A%2B[country code + num]',  # Replace with the recipient's Bangladeshi WhatsApp number
+            'From': 'whatsapp%3A%2B[twillio]',  # Replace with your Twillio WhatsApp number
+            'Body': msg,  # Message content
+        }
+
+        # Manually create the payload string
+        payload_string = '&'.join(['{}={}'.format(key, value) for key, value in payload.items()])
+
+        # Send the request
+        response = requests.post(twilio_url, headers=headers, auth=(account_sid, auth_token), data=payload_string)
+        
+        print('done sending msg : {}'.format(msg))
+        d4.on()
