@@ -1,11 +1,8 @@
 import ujson as json
 import network
 import time
-import usocket as socket
 import machine
 from machine import Pin
-import ustruct
-import os
 import urequests as requests
 import reading
 from umqtt.simple import MQTTClient
