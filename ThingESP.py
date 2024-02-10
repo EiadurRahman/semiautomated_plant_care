@@ -1,7 +1,5 @@
 import ujson as json
-import network
 import time
-import machine
 from machine import Pin
 import urequests as requests
 import reading
@@ -18,7 +16,7 @@ class Client:
         self.username = username
         self.projectName = projectName
         self.password = password
-        self.initalized = False
+        self.initialized = False
         self.mqtt_client = MQTTClient(client_id=projectName + "@" + username,
                                       server=thingesp_server, port=1893, user=projectName + "@" + username, password=password,keepalive=0)
         self.mqtt_client.set_callback(self.on_message)
@@ -27,11 +25,11 @@ class Client:
         
     def setCallback(self, func):
         self.callback_func = func
-        self.initalized = True
+        self.initialized = True
         return self
 
     def on_message(self, client, msg):
-        if self.initalized != True:
+        if self.initialized != True:
             print('Please set the callback func!')
             return
         else:
@@ -39,10 +37,10 @@ class Client:
 #             print(payload)
             if payload['action'] == 'query':
                 out = self.callback_func(payload['query'].lower()) or ""
-                sendr = {
+                sender = {
                     "msg_id": payload['msg_id'], "action": "returned_api_response", "returned_api_response": out}
                 self.mqtt_client.publish(
-                    self.projectName + "/" + self.username, json.dumps(sendr))
+                    self.projectName + "/" + self.username, json.dumps(sender))
 
     def start(self):
         self.mqtt_client.set_callback(self.on_message)
