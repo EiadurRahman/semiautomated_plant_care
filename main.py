@@ -6,7 +6,7 @@ import err_log
 
 
 def handleResponse(query):
-    if query == 'help': # help template
+    if query == 'help': # help tempate
         help_template = """
 To check moisture status  : moisture status / ms
 To check relative humidity : humidity / humd
@@ -21,8 +21,8 @@ To start the pump : start pump / sp
         
     # motor handling 
     elif query in  ['start pump','sp'] :
-        if adc.read() > 800: # to check if starting a ,water is needed
-            value = round((adc.read()/1024)*100) # convert into percentage
+        if adc.read() > 800: # to check if starting a ,otor is needed
+            value = round((adc.read()/1024)*100) # convert into persentage
             return (' moisture level is at {0}%, watering is unnessery'.format(value))
         else:
             return ('starting the pump')
@@ -35,6 +35,9 @@ To start the pump : start pump / sp
         elif query in [ 'temperature', 'temp']:
             temp = reading.humd_temp('temp')
             return ('temperature : {}.C'.format(temp))
+    # returns errors stored in err.txt file
+    elif query == 'read_err':
+        return err_log.read_err()
     else:
         return 'no task is set for {}'.format(query)
 # error handling loop
